@@ -1,4 +1,3 @@
-import { subscribe } from "diagnostics_channel";
 
 interface Observer {
   update(message: string): void;
