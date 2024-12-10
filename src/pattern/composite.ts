@@ -51,22 +51,17 @@ class TFold extends FileBase {
 
 // 测试函数优化
 export function testComposite(): void {
-    console.log('Creating file structure...\n');
-    
     const root = new TFold("root");
-    const docs = new TFold("documents");
-    const pics = new TFold("pictures");
+    const fold1 = new TFold("fold1");
+    const fold2 = new TFold("fold2");
     
-    const file1 = new TFile("report", "doc");
-    const file2 = new TFile("budget", "xlsx");
-    const file3 = new TFile("vacation", "jpg");
-    const file4 = new TFile("family", "png");
+    const file1 = new TFile("file1", "txt");
+    const file2 = new TFile("file2", "doc");
+    const file3 = new TFile("file3", "pdf");
     
-    // 使用链式调用构建文件结构
-    docs.add(file1, file2);
-    pics.add(file3, file4);
-    root.add(docs, pics);
-
-    console.log('\nDisplaying file structure:');
+    fold1.add(file1);
+    fold2.add(file2, file3);
+    root.add(fold1, fold2);
+    
     root.display(0);
 }

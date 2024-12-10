@@ -25,3 +25,4 @@ Thumbs.db
 # 构建输出
 dist/
 build/ 
+~/.pkg-cache
