@@ -1,46 +1,54 @@
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-import * as Pattern from "./pattern";
+import { DeviceScanner } from './media/devices';
 
 interface CommandChoice {
   name: string;
-  value: () => void;
+  value: () => Promise<void>;
 }
 
-const choices: CommandChoice[] = [
+const mainChoices: CommandChoice[] = [
   {
-    name: '观察者模式演示',
-    value: Pattern.testObserver
-  },
-  {
-    name: '责任链模式演示',
-    value: Pattern.testChain
-  },
-  {
-    name: '组合模式演示',
-    value: Pattern.testComposite
-  },
-  {
-    name: '策略模式演示',
-    value: Pattern.testStrategy
-  },
-  {
-    name: '备忘录模式演示',
-    value: Pattern.testMemento
+    name: '扫描系统信息',
+    value: async () => {
+      const scanner = new DeviceScanner();
+      console.log(chalk.blue('\n开始获取系统信息...'));
+      
+      try {
+        const sysInfos = await scanner.scanDisplays();
+        
+        if (sysInfos.length === 0) {
+          console.log(chalk.yellow('\n未能获取系统信息'));
+          return;
+        }
+
+        const info = sysInfos[0];
+        console.log(chalk.yellow('\n系统信息:'));
+        console.log(chalk.gray('主机名:'), info.hostname);
+        console.log(chalk.gray('操作系统:'), info.platform);
+        console.log(chalk.gray('架构:'), info.arch);
+        console.log(chalk.gray('CPU型号:'), info.cpuModel);
+        console.log(chalk.gray('CPU核心数:'), info.cpuCores);
+        console.log(chalk.gray('总内存:'), info.totalMemory);
+        console.log(chalk.gray('可用内存:'), info.freeMemory);
+      } catch (error) {
+        console.error(chalk.red('\n获取信息出错:'), error);
+      }
+    }
   }
 ];
 
 async function main() {
-  console.log(chalk.blue('欢迎使用设计模式演示程序！'));
+  console.log(chalk.blue('欢迎使用系统工具！'));
   
   while (true) {
     const { action } = await inquirer.prompt([
       {
         type: 'list',
         name: 'action',
-        message: '请选择要演示的设计模式:',
+        message: '请选择功能:',
         choices: [
-          ...choices.map(choice => ({
+          ...mainChoices.map(choice => ({
             name: choice.name,
             value: choice
           })),
@@ -57,15 +65,13 @@ async function main() {
       break;
     }
 
-    console.log(chalk.green('\n开始演示...\n'));
-    action.value();
-    console.log(chalk.green('\n演示完成！\n'));
+    await action.value();
 
     const { continue: shouldContinue } = await inquirer.prompt([
       {
         type: 'confirm',
         name: 'continue',
-        message: '是否继续查看其他模式？',
+        message: '是否返回主菜单？',
         default: true
       }
     ]);
